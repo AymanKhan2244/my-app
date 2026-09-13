@@ -39,10 +39,14 @@ jobs:
     steps:
       - name: Trigger Production Deployment
         run: |
+          if [ -z "${{ secrets.PROD_DEPLOY_WEBHOOK }}" ]; then
+            echo "ERROR: PROD_DEPLOY_WEBHOOK secret is not set in repository settings."
+            exit 1
+          fi
           echo "CI tests passed. Initiating production rollout..."
           response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${{ secrets.PROD_DEPLOY_WEBHOOK }}")
-          if [ "$response" -ne 200 ] && [ "$response" -ne 201 ]; then
+          if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
             echo "Deployment trigger failed with HTTP $response"
             exit 1
           fi
-          echo "Deployment hook triggered successfully."
+          echo "Deployment hook triggered successfully (HTTP $response)."
