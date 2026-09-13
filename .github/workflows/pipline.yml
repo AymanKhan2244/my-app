@@ -31,8 +31,7 @@ jobs:
       - name: Run unit test suite
         run: pytest tests/ --junitxml=test-results.xml
 
-
-deploy:
+  deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -46,4 +45,4 @@ deploy:
             echo "Deployment trigger failed with HTTP $response"
             exit 1
           fi
-          echo "Deployment hook triggered successfully."
+          echo "Deployment hook triggered successfully."
